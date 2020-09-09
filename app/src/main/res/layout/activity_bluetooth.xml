@@ -12,18 +12,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="State"
-        android:textSize="20sp"
+        android:textSize="30sp"
         android:textAlignment="center"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/readTextView"
+    <EditText
+        android:id="@+id/inputEdit"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Read"
-        android:textSize="20sp"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="#FFFFFF"
         android:textAlignment="center"
-        app:layout_constraintTop_toBottomOf="@+id/stateTextview" />
+        app:layout_constraintTop_toBottomOf="@+id/stateTextview"/>
+
 
     <Button
         android:id="@+id/scan_btn"
@@ -32,28 +33,16 @@
         android:text="BLE 장치 스캔"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/readTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/inputEdit" />
 
-    <Button
-        android:id="@+id/stop_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="장치와 연결 종료"
-        app:layout_constraintTop_toBottomOf="@+id/scan_btn"/>
 
     <Button
         android:id="@+id/send_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="제어 명령 전송"
-        app:layout_constraintTop_toBottomOf="@+id/stop_btn" />
+        app:layout_constraintTop_toBottomOf="@+id/scan_btn" />
 
-    <Button
-        android:id="@+id/show_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="페어링 장치 목록 표시"
-        app:layout_constraintTop_toBottomOf="@+id/send_btn" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

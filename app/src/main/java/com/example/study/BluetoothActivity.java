@@ -18,10 +18,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +37,6 @@ import static com.example.study.Constants.TAG;
 
 
 public class BluetoothActivity extends Activity {
-
     private BluetoothAdapter bluetoothAdapter;
     private boolean mScanning = false;
     private boolean connected = false;
@@ -48,11 +47,9 @@ public class BluetoothActivity extends Activity {
     private BluetoothGatt bluetoothGatt;
 
     private TextView stateTextview;
-    private TextView readTextView;
+    private EditText inputEdit;
     private Button scan_btn;
-    private Button stop_btn;
     private Button send_btn;
-    private Button show_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,11 +57,9 @@ public class BluetoothActivity extends Activity {
         setContentView(R.layout.activity_bluetooth);
 
         stateTextview = findViewById(R.id.stateTextview);
-        readTextView = findViewById(R.id.readTextView);
+        inputEdit = findViewById(R.id.inputEdit);
         scan_btn = findViewById(R.id.scan_btn);
-        stop_btn = findViewById(R.id.stop_btn);
         send_btn = findViewById(R.id.send_btn);
-        show_btn = findViewById(R.id.show_btn);
 
         //BluetoothManager를 이용해 bluetoothAdapter설정 -> 스캔 하기 위한 기본 준비 완료
         BluetoothManager bluetoothManager;
@@ -154,7 +149,9 @@ public class BluetoothActivity extends Activity {
             return;
         }
 
-        startStimulation(commandCharacteristic, 1);
+        String input = inputEdit.getText().toString();
+
+        startStimulation(commandCharacteristic, input);
     }
 
     private class BLEScanCallback extends ScanCallback{
@@ -250,6 +247,7 @@ public class BluetoothActivity extends Activity {
                 connected = true;
                 stateTextview.setText("Connected");
                 Log.d(TAG, "Connected to the GATT server");
+                gatt.discoverServices();
             } else if(newState == BluetoothProfile.STATE_DISCONNECTED){
                 disconnectGattServer();
             }
@@ -271,6 +269,7 @@ public class BluetoothActivity extends Activity {
                 return;
             }
 
+
             Log.d(TAG, "Service discovery is successful");
         }
 
@@ -285,6 +284,8 @@ public class BluetoothActivity extends Activity {
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
+
+            gatt.setCharacteristicNotification(characteristic, true);
 
             if(status == BluetoothGatt.GATT_SUCCESS){
                 Log.d(TAG, "Characteristic written successfully");
@@ -312,7 +313,15 @@ public class BluetoothActivity extends Activity {
         }
     }
 
-    private void startStimulation(BluetoothGattCharacteristic commandCharacteristic, final int programID) {
+    private void startStimulation(BluetoothGattCharacteristic commandCharacteristic, String input) {
+        commandCharacteristic.setValue(input);
+        boolean success = bluetoothGatt.writeCharacteristic(commandCharacteristic);
+
+        if( success ) {
+            Log.d( TAG, input);
+        } else {
+            Log.e( TAG, "Failed to write command" );
+        }
 
     }
 
