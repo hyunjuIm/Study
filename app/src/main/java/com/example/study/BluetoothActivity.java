@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.bluetooth.le.BluetoothLeScanner;
@@ -29,12 +30,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import static com.example.study.Constants.CHARACTERISTIC_COMMAND_STRING;
+import static com.example.study.Constants.CHARACTERISTIC_RESPONSE_STRING;
 import static com.example.study.Constants.MAC_ADDRESS;
 import static com.example.study.Constants.REQUEST_ENABLE_BT;
 import static com.example.study.Constants.SCAN_PERIOD;
 import static com.example.study.Constants.TAG;
-
 
 public class BluetoothActivity extends Activity {
     private BluetoothAdapter bluetoothAdapter;
@@ -45,8 +48,11 @@ public class BluetoothActivity extends Activity {
     private BluetoothLeScanner bluetoothLeScanner;
     private Handler handler;
     private BluetoothGatt bluetoothGatt;
+    private BluetoothGattCharacteristic gattCharacteristic;
+    private BluetoothGattDescriptor desc;
 
     private TextView stateTextview;
+    private TextView readTextview;
     private EditText inputEdit;
     private Button scan_btn;
     private Button send_btn;
@@ -57,6 +63,7 @@ public class BluetoothActivity extends Activity {
         setContentView(R.layout.activity_bluetooth);
 
         stateTextview = findViewById(R.id.stateTextview);
+        readTextview = findViewById(R.id.readTextview);
         inputEdit = findViewById(R.id.inputEdit);
         scan_btn = findViewById(R.id.scan_btn);
         send_btn = findViewById(R.id.send_btn);
@@ -142,16 +149,15 @@ public class BluetoothActivity extends Activity {
             return;
         }
 
-        BluetoothGattCharacteristic commandCharacteristic = BluetoothUtils.findCommandCharacteristic(bluetoothGatt);
-        if(commandCharacteristic == null){
+        gattCharacteristic = BluetoothUtils.findCommandCharacteristic(bluetoothGatt);
+        if(gattCharacteristic == null){
             Log.d(TAG, "Unable to find cmd characteristic");
             disconnectGattServer();
             return;
         }
 
         String input = inputEdit.getText().toString();
-
-        startStimulation(commandCharacteristic, input);
+        startStimulation(gattCharacteristic, input);
     }
 
     private class BLEScanCallback extends ScanCallback{
@@ -253,6 +259,7 @@ public class BluetoothActivity extends Activity {
             }
         }
 
+
         //데이터 읽기, 쓰기, 상태변화 처리
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
@@ -269,13 +276,15 @@ public class BluetoothActivity extends Activity {
                 return;
             }
 
-
             Log.d(TAG, "Service discovery is successful");
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+            Log.d(TAG,"123123");
             super.onCharacteristicChanged(gatt, characteristic);
+
+            Log.d(TAG, "status3 = " + gatt.setCharacteristicNotification(characteristic, true));
 
             Log.d(TAG, "characteristic changed : "+characteristic.getUuid().toString());
             readCharacteristic(characteristic);
@@ -285,7 +294,7 @@ public class BluetoothActivity extends Activity {
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
 
-            gatt.setCharacteristicNotification(characteristic, true);
+            Log.d(TAG, "status1 = " + gatt.setCharacteristicNotification(characteristic, true));
 
             if(status == BluetoothGatt.GATT_SUCCESS){
                 Log.d(TAG, "Characteristic written successfully");
@@ -293,11 +302,15 @@ public class BluetoothActivity extends Activity {
                 Log.d(TAG, "Characteristic write unsuccessful, state : "+status);
                 disconnectGattServer();
             }
+
         }
 
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            Log.d(TAG, "join read successfully");
             super.onCharacteristicRead(gatt, characteristic, status);
+
+            Log.d(TAG, "status2 = " + gatt.setCharacteristicNotification(characteristic, true));
 
             if(status == BluetoothGatt.GATT_SUCCESS){
                 Log.d(TAG, "Characteristic read successfully");
@@ -313,19 +326,19 @@ public class BluetoothActivity extends Activity {
         }
     }
 
+
     private void startStimulation(BluetoothGattCharacteristic commandCharacteristic, String input) {
         commandCharacteristic.setValue(input);
         boolean success = bluetoothGatt.writeCharacteristic(commandCharacteristic);
-
         if( success ) {
             Log.d( TAG, input);
         } else {
-            Log.e( TAG, "Failed to write command" );
+            Log.d( TAG, "Failed to write command" );
         }
-
     }
 
     private void disconnectGattServer() {
+        stateTextview.setText("Closing Connection");
         Log.d(TAG, "Closing Gatt connection");
         connected = false;
         if(bluetoothGatt != null){

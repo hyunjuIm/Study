@@ -16,6 +16,15 @@
         android:textAlignment="center"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/readTextview"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimary"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        app:layout_constraintTop_toBottomOf="@+id/stateTextview" />
+
     <EditText
         android:id="@+id/inputEdit"
         android:layout_width="match_parent"
@@ -23,8 +32,7 @@
         android:background="@color/colorPrimaryDark"
         android:textColor="#FFFFFF"
         android:textAlignment="center"
-        app:layout_constraintTop_toBottomOf="@+id/stateTextview"/>
-
+        app:layout_constraintTop_toBottomOf="@+id/readTextview"/>
 
     <Button
         android:id="@+id/scan_btn"
@@ -35,14 +43,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/inputEdit" />
 
-
     <Button
         android:id="@+id/send_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="제어 명령 전송"
         app:layout_constraintTop_toBottomOf="@+id/scan_btn" />
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

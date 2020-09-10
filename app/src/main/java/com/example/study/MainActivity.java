@@ -24,12 +24,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //블루투스 연동
+        //블루투스
         Button bluetooth_btn = findViewById(R.id.bluetooth_btn);
         bluetooth_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, BluetoothActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        //결제
+        Button pay_btn = findViewById(R.id.pay_btn);
+        pay_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, PayActivity.class);
                 startActivity(intent);
             }
         });
