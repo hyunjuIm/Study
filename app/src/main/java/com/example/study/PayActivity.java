@@ -44,15 +44,12 @@ import java.util.Locale;
 public class PayActivity extends AppCompatActivity{
     private static PayActivity instance;
 
-    private Volley loadingDialog;
-
     private WebView webPay;
 
     private String TAG = "CAN";
 
     // 카드사 승인번호, 거래번호, 주문번호
     private String authno, trno, orderno;
-    Toast toast = null;
 
     private String validationPrice = "";
     private String validationTid = "";
@@ -70,6 +67,8 @@ public class PayActivity extends AppCompatActivity{
     private void initView() {
         webPay = (WebView) findViewById(R.id.webPay);
 
+        webPay.getSettings().setJavaScriptEnabled(true);
+
         // android 5.0부터 앱에서 API수준21이상을 타겟킹하는 경우 아래추가
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             webPay.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
@@ -77,6 +76,7 @@ public class PayActivity extends AppCompatActivity{
             cookieManager.setAcceptCookie(true);
             cookieManager.setAcceptThirdPartyCookies(webPay, true);
         }
+
         webPay.addJavascriptInterface(new PayActivity.PayBridge(), "PayApp");
         webPay.setWebViewClient(new LguplusWebClient());
         webPay.setWebChromeClient(new LguplusWebChromeClient());
@@ -144,36 +144,20 @@ public class PayActivity extends AppCompatActivity{
 
         @JavascriptInterface
         public void GetUserData() {
-            Log.d(TAG, "-------------------------------");
             // 사용자 데이터 보내기
+            String payment_kind = "SC0010";//결제타입 - SC0060(폰결제), SC0010(카드결제)
             String userName = "임현주"; // 성명
             String userId = "abc"; // ID
             String userEmail = "dear_jjwim@naver.com"; // email
             String orderNumber = "0000"; // 주문번호
             String goodsName = "정기권"; // 상품명
-            String price = "1"; // 가격
-
-            // 결제 타입
-            String payment_kind = "";
-            if (getIntent().getStringExtra("type").trim().equals("cell")) {
-                payment_kind = "SC0060";
-            } else if (getIntent().getStringExtra("type").trim().equals("credit")) {
-                payment_kind = "SC0010";
-            }
-
-            final String userName_f = userName;
-            final String orderNumber_f = orderNumber;
-            final String goodName_f = goodsName;
-            final String price_f = price;
-            final String payment_kind_f = "SC0060";
-            final String user_id_f = userId;
-            final String user_email_f = userEmail;
+            String price = "10"; // 가격
 
             webPay.post(new Runnable() {
                 @Override
                 public void run() {
-                    String url = "javascript:userData('" + payment_kind_f + "', '" + price_f + "', '" + userName_f + "', '"
-                            + orderNumber_f + "', '" + goodName_f + "', '" + user_id_f + "', '" + user_email_f + "')";
+                    String url = "javascript:userData('" + payment_kind + "', '" + price + "', '" + userName + "', '"
+                            + orderNumber + "', '" + goodsName + "', '" + userId + "', '" + userEmail + "')";
                     Log.d(TAG, "url : " + url);
                     webPay.loadUrl(url);
                 }
@@ -183,12 +167,11 @@ public class PayActivity extends AppCompatActivity{
 
     private class LguplusWebClient extends WebViewClient {
         public boolean shouldOverrideUrlLoading(final WebView view, String url) {
-            Log.d(TAG, "-------------------------------");
-            if ((url.startsWith("http://") || url.startsWith("https://")) && url.endsWith(".apk")) {
-                downloadFile(url);
-                return super.shouldOverrideUrlLoading(view, url);
-            } else if ((url.startsWith("http://") || url.startsWith("https://")) && (url.contains("market.android.com") || url.contains("m.ahnlab.com/kr/site/download"))) {
-                Uri uri = Uri.parse(url);
+                    if ((url.startsWith("http://") || url.startsWith("https://")) && url.endsWith(".apk")) {
+                        downloadFile(url);
+                        return super.shouldOverrideUrlLoading(view, url);
+                    } else if ((url.startsWith("http://") || url.startsWith("https://")) && (url.contains("market.android.com") || url.contains("m.ahnlab.com/kr/site/download"))) {
+                        Uri uri = Uri.parse(url);
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 try {
                     startActivity(intent);
@@ -199,11 +182,20 @@ public class PayActivity extends AppCompatActivity{
             } else if (url.startsWith("http://") || url.startsWith("https://")) {
                 view.loadUrl(url);
                 return true;
-            } else if (url != null
-                    && (url.contains("vguard") || url.contains("droidxantivirus") || url.contains("smhyundaiansimclick://")
-                    || url.contains("smshinhanansimclick://") || url.contains("smshinhancardusim://") || url.contains("smartwall://") || url.contains("appfree://")
-                    || url.contains("v3mobile") || url.endsWith(".apk") || url.contains("market://") || url.contains("ansimclick")
-                    || url.contains("market://details?id=com.shcard.smartpay") || url.contains("shinhan-sr-ansimclick://"))) {
+            } else if (url != null &&
+                    (url.contains("vguard")
+                            || url.contains("droidxantivirus")
+                            || url.contains("smhyundaiansimclick://")
+                            || url.contains("smshinhanansimclick://")
+                            || url.contains("smshinhancardusim://")
+                            || url.contains("smartwall://")
+                            || url.contains("appfree://")
+                            || url.contains("v3mobile")
+                            || url.endsWith(".apk")
+                            || url.contains("market://")
+                            || url.contains("ansimclick")
+                            || url.contains("market://details?id=com.shcard.smartpay")
+                            || url.contains("shinhan-sr-ansimclick://"))) {
                 return callApp(url);
             } else if (url.startsWith("smartxpay-transfer://")) {
                 boolean isatallFlag = isPackageInstalled(getApplicationContext(), "kr.co.uplus.ecredit");
