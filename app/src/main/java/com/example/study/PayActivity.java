@@ -448,8 +448,6 @@ public class PayActivity extends AppCompatActivity{
                     result.confirm();
                 }
             }).setCancelable(false).create().show();
-            // showToast(message);
-            // result.confirm();
             return true;
         }
 
