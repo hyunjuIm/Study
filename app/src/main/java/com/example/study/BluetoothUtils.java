@@ -45,8 +45,8 @@ public class BluetoothUtils {
     }
 
     @Nullable
-    public static BluetoothGattCharacteristic findResponseCharacteristic( BluetoothGatt gatt ) {
-        return findCharacteristic( gatt, CHARACTERISTIC_RESPONSE_STRING );
+    public static BluetoothGattCharacteristic findResponseCharacteristic( BluetoothGatt _gatt ) {
+        return findCharacteristic( _gatt, CHARACTERISTIC_RESPONSE_STRING );
     }
 
     //UUID Characteristic 찾기

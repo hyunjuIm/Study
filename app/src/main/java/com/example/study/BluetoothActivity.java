@@ -1,5 +1,6 @@
 package com.example.study;
 
+import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -36,6 +37,7 @@ import static com.example.study.Constants.CHARACTERISTIC_COMMAND_STRING;
 import static com.example.study.Constants.CHARACTERISTIC_RESPONSE_STRING;
 import static com.example.study.Constants.MAC_ADDRESS;
 import static com.example.study.Constants.REQUEST_ENABLE_BT;
+import static com.example.study.Constants.REQUEST_FINE_LOCATION;
 import static com.example.study.Constants.SCAN_PERIOD;
 import static com.example.study.Constants.TAG;
 
@@ -110,8 +112,14 @@ public class BluetoothActivity extends Activity {
             return;
         }
 
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions( new String[]{ Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_FINE_LOCATION );
+            stateTextview.setText("Scanning Failed: no fine location permission");
+            return;
+        }
+
         //기존 연결 되어있던 GAPP 서버 연결 종료
-        disconnectGattServer();
+        //disconnectGattServer();
 
         //스캔할 장치 필터 - MAC주소의 장치만 스캔
         List<ScanFilter> filters = new ArrayList<>();
@@ -259,7 +267,6 @@ public class BluetoothActivity extends Activity {
             }
         }
 
-
         //데이터 읽기, 쓰기, 상태변화 처리
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
@@ -284,7 +291,7 @@ public class BluetoothActivity extends Activity {
             Log.d(TAG,"123123");
             super.onCharacteristicChanged(gatt, characteristic);
 
-            Log.d(TAG, "status3 = " + gatt.setCharacteristicNotification(characteristic, true));
+            gatt.setCharacteristicNotification(characteristic, true);
 
             Log.d(TAG, "characteristic changed : "+characteristic.getUuid().toString());
             readCharacteristic(characteristic);
@@ -294,7 +301,7 @@ public class BluetoothActivity extends Activity {
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
 
-            Log.d(TAG, "status1 = " + gatt.setCharacteristicNotification(characteristic, true));
+            gatt.setCharacteristicNotification(characteristic, true);
 
             if(status == BluetoothGatt.GATT_SUCCESS){
                 Log.d(TAG, "Characteristic written successfully");
@@ -310,7 +317,7 @@ public class BluetoothActivity extends Activity {
             Log.d(TAG, "join read successfully");
             super.onCharacteristicRead(gatt, characteristic, status);
 
-            Log.d(TAG, "status2 = " + gatt.setCharacteristicNotification(characteristic, true));
+            gatt.setCharacteristicNotification(characteristic, true);
 
             if(status == BluetoothGatt.GATT_SUCCESS){
                 Log.d(TAG, "Characteristic read successfully");
@@ -325,7 +332,6 @@ public class BluetoothActivity extends Activity {
             Log.d(TAG, "read : " + msg.toString());
         }
     }
-
 
     private void startStimulation(BluetoothGattCharacteristic commandCharacteristic, String input) {
         commandCharacteristic.setValue(input);
