@@ -106,8 +106,8 @@ public class BluetoothActivity extends Activity {
         stateTextview.setText("Scanning...");
 
         if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
-            Intent ble_enable_intent= new Intent( BluetoothAdapter.ACTION_REQUEST_ENABLE );
-            startActivityForResult( ble_enable_intent, REQUEST_ENABLE_BT );
+            Intent bleEnableIntent= new Intent( BluetoothAdapter.ACTION_REQUEST_ENABLE );
+            startActivityForResult( bleEnableIntent, REQUEST_ENABLE_BT );
             stateTextview.setText("Scanning Failed: ble not enabled");
             return;
         }
@@ -119,7 +119,7 @@ public class BluetoothActivity extends Activity {
         }
 
         //기존 연결 되어있던 GAPP 서버 연결 종료
-        //disconnectGattServer();
+        disconnectGattServer();
 
         //스캔할 장치 필터 - MAC주소의 장치만 스캔
         List<ScanFilter> filters = new ArrayList<>();

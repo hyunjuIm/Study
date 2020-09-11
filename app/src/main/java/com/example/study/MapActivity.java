@@ -2,6 +2,8 @@ package com.example.study;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
@@ -38,6 +40,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
     private ArrayList<Station> stationList = new ArrayList<>();
 
+
     // 마커 정보 저장시킬 변수들 선언
     private Vector<LatLng> markersPosition;
     private Vector<Marker> activeMarkers;
@@ -70,7 +73,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     }
 
     public void sendRequest(@NonNull NaverMap naverMap){
-        RequestQueue queue = Volley.newRequestQueue(this);
+        RequestQueue queue = Volley.newRequestQueue(this); //서버요청자
         String url = "http://app.sejongbike.kr/v1/station/list";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -94,7 +97,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                                         stationInfo.getString("area"),
                                         stationInfo.getString("geofence_distance"),
                                         stationInfo.getString("bike_parking")));
-                                Log.e(TAG, stationList.get(i).getGu());
                             }
 
                         } catch (JSONException e) {
@@ -122,6 +124,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 Log.d(TAG, "대여소 데이터 가져오기 실패");
             }
         });
+        jsonObjectRequest.setShouldCache(false);
         queue.add(jsonObjectRequest);
     }
 }

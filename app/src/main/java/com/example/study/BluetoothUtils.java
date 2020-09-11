@@ -15,9 +15,7 @@ import static com.example.study.Constants.CHARACTERISTIC_RESPONSE_STRING;
 import static com.example.study.Constants.SERVICE_STRING;
 
 public class BluetoothUtils {
-    /*
-    BLE 특성 찾는 클래스
-     */
+    //BLE 특성 찾는 클래스
 
     public static List<BluetoothGattCharacteristic> findBLECharacteristics(BluetoothGatt gatt) {
         List<BluetoothGattCharacteristic> matchingCharacteristics = new ArrayList<>();

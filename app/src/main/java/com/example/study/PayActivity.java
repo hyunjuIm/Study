@@ -170,7 +170,8 @@ public class PayActivity extends AppCompatActivity{
                     if ((url.startsWith("http://") || url.startsWith("https://")) && url.endsWith(".apk")) {
                         downloadFile(url);
                         return super.shouldOverrideUrlLoading(view, url);
-                    } else if ((url.startsWith("http://") || url.startsWith("https://")) && (url.contains("market.android.com") || url.contains("m.ahnlab.com/kr/site/download"))) {
+                    } else if ((url.startsWith("http://") || url.startsWith("https://")) &&
+                            (url.contains("market.android.com") || url.contains("m.ahnlab.com/kr/site/download"))) {
                         Uri uri = Uri.parse(url);
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 try {
