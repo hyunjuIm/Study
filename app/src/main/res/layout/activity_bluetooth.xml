@@ -41,6 +41,8 @@
             android:background="@color/colorPrimary"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
+            android:text="read"
+            android:textSize="30sp"
             android:layout_marginTop="50dp"/>
 
         <EditText

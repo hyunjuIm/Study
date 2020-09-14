@@ -89,7 +89,6 @@ public class DeviceScanActivity extends Activity {
         final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         mBluetoothAdapter = bluetoothManager.getAdapter();
 
-
         scan_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -158,7 +157,6 @@ public class DeviceScanActivity extends Activity {
     //블루투스 스캔 시작
     private void startScan(View v) {
         stateTextview.setText("Scanning...");
-
         scanLeDevice(true);
     }
 

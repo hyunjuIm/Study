@@ -110,29 +110,11 @@ public class BluetoothLeService extends Service {
         final Intent intent = new Intent(action);
 
         if (UUID_CHARACTERISTIC.equals(characteristic.getUuid())) {
-            int flag = characteristic.getProperties(); //속성 반환
-            int format = -1;
-            if ((flag & 0x01) != 0) {
-                format = BluetoothGattCharacteristic.FORMAT_UINT16;
-                Log.e(TAG, "format UINT16.");
-            } else {
-                format = BluetoothGattCharacteristic.FORMAT_UINT8;
-                Log.e(TAG, "format UINT8.");
-            }
-            final int bicycleLock = characteristic.getIntValue(format, 1);
-            Log.e(TAG, String.format("Received bicycle lock: %d", bicycleLock));
-            //intent.putExtra(EXTRA_DATA, String.valueOf(bicycleLock));
-            intent.putExtra(EXTRA_DATA, characteristic.getProperties());
-            //intent.putExtra(EXTRA_DATA, characteristic.getDescriptor(UUID.fromString(GattAttributes.CHARACTERISTIC_STRING)).toString());
-        } else {
-            // 다른 모든 프로필의 경우 HEX 형식의 데이터 쓴다.
             final byte[] data = characteristic.getValue();
-            if (data != null && data.length > 0) {
-                final StringBuilder stringBuilder = new StringBuilder(data.length);
-                for(byte byteChar : data)
-                    stringBuilder.append(String.format("%02X ", byteChar));
-                intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
-            }
+            final StringBuilder stringBuilder = new StringBuilder(data.length);
+            for(byte byteChar : data)
+                stringBuilder.append(String.format("%02X ", byteChar));
+            intent.putExtra(EXTRA_DATA, new String(data));
         }
 
         sendBroadcast(intent);
