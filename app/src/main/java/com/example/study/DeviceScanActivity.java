@@ -257,6 +257,8 @@ public class DeviceScanActivity extends Activity {
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
                 stateTextview.setText("Disonnected");
+                mBluetoothLeService.disconnect();
+                mBluetoothLeService.close();
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // GATT 서비스를 발견 - 사용자 인터페이스에 지원되는 모든 서비스 및 특성을 표시
                 displayGattServices(mBluetoothLeService.getSupportedGattServices());

@@ -47,6 +47,7 @@ public class BluetoothLeService extends Service {
 
     public final static UUID UUID_CHARACTERISTIC = UUID.fromString(GattAttributes.CHARACTERISTIC_STRING);
 
+
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -175,6 +176,7 @@ public class BluetoothLeService extends Service {
             return false;
         }
 
+        /*
         // 이전에 연결된 장치 다시 연결
         if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress) && mBluetoothGatt != null) {
             Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
@@ -185,6 +187,7 @@ public class BluetoothLeService extends Service {
                 return false;
             }
         }
+         */
 
         final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         if (device == null) {
@@ -223,11 +226,6 @@ public class BluetoothLeService extends Service {
         mBluetoothGatt.writeCharacteristic(characteristic);
     }
 
-    /**
-     * 지정된 {@code BluetoothGattCharacteristic}에 대한 읽기를 요청합니다. 읽기 결과가보고됩니다.
-     * {@code BluetoothGattCallback # onCharacteristicRead (android.bluetooth.BluetoothGatt, android.bluetooth.BluetoothGattCharacteristic, int)}를 통한
-     * 비동기식 callback.
-     */
     public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
@@ -236,10 +234,6 @@ public class BluetoothLeService extends Service {
         mBluetoothGatt.readCharacteristic(characteristic);
     }
 
-    /**
-     * 제공 특성에 대한 알림을 활성화 또는 비활성화합니다.
-     * @param enabled true 인 경우 알림을 활성화합니다. 그렇지 않으면 거짓입니다.
-     */
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,boolean enabled) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
